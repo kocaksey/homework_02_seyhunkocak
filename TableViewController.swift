@@ -17,7 +17,6 @@ class TableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //tableView.separatorStyle = .none
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(.init(nibName: "CurrencyCell", bundle: nil), forCellReuseIdentifier: "CurrencyCellIdentifier")
@@ -51,8 +50,9 @@ class TableViewController: UIViewController {
                             
                             if let rates = jsonResponse["rates"] as? [String : Double] {
                                 
-                                self.rates = rates
-                                print(rates["BYN"] as! Double)
+                                
+                                self.rates = rates.filter({$0.key != "EUR"})
+                                
                             }
                             self.tableView.reloadData()
                             
@@ -84,17 +84,15 @@ extension TableViewController : UITableViewDataSource {
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(rates)
         return rates.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CurrencyCellIdentifier", for: indexPath) as! CurrencyCell
         
-        print(Array(rates.keys)[indexPath.row])
     
         cell.codeLabel.text = "EUR / \(Array(rates.keys)[indexPath.row])"
-        cell.rateLabel.text = String(rates[Array(rates.keys)[indexPath.row]] ?? 0) ?? ""
+        cell.rateLabel.text = String(rates[Array(rates.keys)[indexPath.row]] ?? 0)
     
         return cell
     }
